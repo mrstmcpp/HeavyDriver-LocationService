@@ -21,11 +21,13 @@ configurations {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
@@ -33,9 +35,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-
-    //local publications
-    implementation 'org.mrstm:UberEntityService:0.0.4-SNAPSHOT'
+    // https://mvnrepository.com/artifact/redis.clients/jedis
+    implementation group: 'redis.clients', name: 'jedis', version: '6.0.0'
 }
 
 tasks.named('test') {
