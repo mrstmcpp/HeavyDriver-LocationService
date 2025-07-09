@@ -7,9 +7,18 @@ spring:
       port: 6379
   cache:
     type: redis
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: group-1
 
 server:
-  port: 3004
+  port: 3005
 
 eureka:
   client:
@@ -21,3 +30,4 @@ eureka:
 redis:
   port: 6379
   host: localhost
+

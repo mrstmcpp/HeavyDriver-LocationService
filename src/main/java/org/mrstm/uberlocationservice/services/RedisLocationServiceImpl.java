@@ -36,7 +36,7 @@ public class RedisLocationServiceImpl implements LocationService {
     @Override
     public List<DriverLocationDto> getNearbyDrivers(Double latitude, Double longitude) {
         GeoOperations<String , String> geoOps = stringRedisTemplate.opsForGeo();
-        Distance radius = new Distance(SEARCH_RADIUS_KEY , Metrics.KILOMETERS);
+        Distance radius = new Distance(SEARCH_RADIUS_KEY, Metrics.KILOMETERS);
         Circle within = new Circle(new Point(latitude , longitude) , radius);
 
         GeoResults<RedisGeoCommands.GeoLocation<String>> geoResult = geoOps.radius(DRIVER_LOCATION_KEY , within);
