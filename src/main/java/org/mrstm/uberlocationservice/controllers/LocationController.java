@@ -1,5 +1,6 @@
 package org.mrstm.uberlocationservice.controllers;
 
+import org.mrstm.uberlocationservice.adaptors.StringToDouble;
 import org.mrstm.uberlocationservice.dto.CheckIfWithinDestDto;
 import org.mrstm.uberlocationservice.dto.DriverLocationDto;
 import org.mrstm.uberlocationservice.dto.NearbyDriversRequestDto;
@@ -10,17 +11,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/location")
+@RequestMapping("/api/v1/location")
 public class LocationController {
 
     private final LocationService locationService;
+    private final StringToDouble adaptor;
 
-    public LocationController(LocationService locationService) {
+
+    public LocationController(LocationService locationService, StringToDouble adaptor) {
         this.locationService = locationService;
+        this.adaptor = adaptor;
     }
 
     @PostMapping("/drivers")
@@ -37,9 +42,11 @@ public class LocationController {
     @PostMapping("/nearby/drivers")
     public ResponseEntity<List<DriverLocationDto>> getNearbyDrivers(@RequestBody NearbyDriversRequestDto nearbyDriversRequestDto) {
         try{
-            List<DriverLocationDto> nearbyDrivers = locationService.getNearbyDrivers(nearbyDriversRequestDto.getLatitude() , nearbyDriversRequestDto.getLongitude());
+            Location location = adaptor.convertToDouble(nearbyDriversRequestDto);
+            List<DriverLocationDto> nearbyDrivers = locationService.getNearbyDrivers(location.getLatitude() , location.getLongitude());
             return new ResponseEntity<>(nearbyDrivers, HttpStatus.OK);
         } catch (Exception e) {
+            System.out.println(e);
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

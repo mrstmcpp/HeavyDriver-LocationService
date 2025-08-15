@@ -1,5 +1,6 @@
 package org.mrstm.uberlocationservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
@@ -8,7 +9,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NearbyDriversRequestDto {
-    Double latitude;
-    Double longitude;
+    @NotBlank(message = "Latitude is required")
+     private String latitude;
+
+    @NotBlank(message = "Longitude is required")
+    private String longitude;
 
 }
