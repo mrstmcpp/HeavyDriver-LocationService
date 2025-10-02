@@ -12,7 +12,7 @@ public class KafkaConsumerService {
     public KafkaConsumerService(LocationService locationService){
         this.locationService = locationService;
     }
-    @KafkaListener(topics = "driver-location", groupId = "group-1")
+    @KafkaListener(topics = "driver-location", groupId = "${spring.kafka.consumer.group-id}")
     public void consumeLocation(String message) {
         JSONObject json = new JSONObject(message);
         String driverId = json.getString("driverId");
@@ -30,5 +30,8 @@ public class KafkaConsumerService {
         System.out.println(message);
 //        redisTemplate.opsForGeo().add("driver-locations", new Point(lon, lat), driverId);
     }
+
+
+
 
 }

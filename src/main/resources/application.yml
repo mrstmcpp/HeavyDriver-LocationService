@@ -5,17 +5,18 @@ spring:
     redis:
       host: localhost
       port: 6379
+      database: 0
   cache:
     type: redis
   kafka:
     bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      group-id: group-1
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      group-id: location-group
 
 server:
   port: 3005

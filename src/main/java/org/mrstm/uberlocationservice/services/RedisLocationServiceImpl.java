@@ -30,32 +30,40 @@ public class RedisLocationServiceImpl implements LocationService {
 
     @Override
     public Boolean saveDriverLocation(String driverId, Double latitude, Double longitude) {
-        GeoOperations<String, String> geoOps = stringRedisTemplate.opsForGeo(); //geooperations is primarily used for storing geo coordinates
-        geoOps.add(DRIVER_LOCATION_KEY,
-                new RedisGeoCommands.GeoLocation<>(driverId,
-                        new Point(latitude, longitude)));
+       try{
+           GeoOperations<String, String> geoOps = stringRedisTemplate.opsForGeo(); //geooperations is primarily used for storing geo coordinates
+           geoOps.add(DRIVER_LOCATION_KEY,
+                   new RedisGeoCommands.GeoLocation<>(driverId,
+                           new Point(latitude, longitude)));
 
-        return true;
+           return true;
+       } catch (RuntimeException e) {
+           return false;
+       }
     }
 
     @Override
     public List<DriverLocationDto> getNearbyDrivers(Double latitude, Double longitude) {
-        GeoOperations<String, String> geoOps = stringRedisTemplate.opsForGeo();
-        Distance radius = new Distance(SEARCH_RADIUS_KEY, Metrics.KILOMETERS);
-        Circle within = new Circle(new Point(latitude, longitude), radius);
+        try{
+            GeoOperations<String, String> geoOps = stringRedisTemplate.opsForGeo();
+            Distance radius = new Distance(SEARCH_RADIUS_KEY, Metrics.KILOMETERS);
+            Circle within = new Circle(new Point(latitude, longitude), radius);
 
-        GeoResults<RedisGeoCommands.GeoLocation<String>> geoResult = geoOps.radius(DRIVER_LOCATION_KEY, within);
-        List<DriverLocationDto> nearbyDrivers = new ArrayList<>();
-        for (GeoResult<RedisGeoCommands.GeoLocation<String>> result : geoResult) {
-            Point point = geoOps.position(DRIVER_LOCATION_KEY, result.getContent().getName()).get(0);
-            DriverLocationDto driverLocationDto = DriverLocationDto.builder()
-                    .driverId(result.getContent().getName())
-                    .latitude(point.getX())
-                    .longitude(point.getY())
-                    .build();
-            nearbyDrivers.add(driverLocationDto);
+            GeoResults<RedisGeoCommands.GeoLocation<String>> geoResult = geoOps.radius(DRIVER_LOCATION_KEY, within);
+            List<DriverLocationDto> nearbyDrivers = new ArrayList<>();
+            for (GeoResult<RedisGeoCommands.GeoLocation<String>> result : geoResult) {
+                Point point = geoOps.position(DRIVER_LOCATION_KEY, result.getContent().getName()).get(0);
+                DriverLocationDto driverLocationDto = DriverLocationDto.builder()
+                        .driverId(result.getContent().getName())
+                        .latitude(point.getX())
+                        .longitude(point.getY())
+                        .build();
+                nearbyDrivers.add(driverLocationDto);
+            }
+            return nearbyDrivers;
+        } catch (RuntimeException e) {
+            return null;
         }
-        return nearbyDrivers;
     }
 
     @Override
