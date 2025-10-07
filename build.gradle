@@ -21,6 +21,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {
@@ -40,6 +41,10 @@ dependencies {
     // https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.3.0")
     implementation("org.springframework.kafka:spring-kafka:4.0.0-M2")
+
+    //local publications
+    implementation 'org.mrstm:UberEntityService:0.0.6-SNAPSHOT'
+
 
 }
 
