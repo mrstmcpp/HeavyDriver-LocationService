@@ -1,8 +1,9 @@
 package org.mrstm.uberlocationservice.services;
 
+import org.mrstm.uberentityservice.dto.location.DriverLocation;
+import org.mrstm.uberentityservice.models.ExactLocation;
 import org.mrstm.uberlocationservice.Maths.GetDistanceBetweenTwoPoints;
 import org.mrstm.uberlocationservice.dto.CheckIfWithinDestDto;
-import org.mrstm.uberlocationservice.dto.DriverLocationDto;
 import org.mrstm.uberlocationservice.models.Location;
 import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
@@ -43,17 +44,17 @@ public class RedisLocationServiceImpl implements LocationService {
     }
 
     @Override
-    public List<DriverLocationDto> getNearbyDrivers(Double latitude, Double longitude) {
+    public List<DriverLocation> getNearbyDrivers(ExactLocation pickupLocation) {
         try{
             GeoOperations<String, String> geoOps = stringRedisTemplate.opsForGeo();
             Distance radius = new Distance(SEARCH_RADIUS_KEY, Metrics.KILOMETERS);
-            Circle within = new Circle(new Point(latitude, longitude), radius);
+            Circle within = new Circle(new Point(pickupLocation.getLatitude() , pickupLocation.getLongitude()), radius);
 
             GeoResults<RedisGeoCommands.GeoLocation<String>> geoResult = geoOps.radius(DRIVER_LOCATION_KEY, within);
-            List<DriverLocationDto> nearbyDrivers = new ArrayList<>();
+            List<DriverLocation> nearbyDrivers = new ArrayList<>();
             for (GeoResult<RedisGeoCommands.GeoLocation<String>> result : geoResult) {
                 Point point = geoOps.position(DRIVER_LOCATION_KEY, result.getContent().getName()).get(0);
-                DriverLocationDto driverLocationDto = DriverLocationDto.builder()
+                DriverLocation driverLocationDto = DriverLocation.builder()
                         .driverId(result.getContent().getName())
                         .latitude(point.getX())
                         .longitude(point.getY())

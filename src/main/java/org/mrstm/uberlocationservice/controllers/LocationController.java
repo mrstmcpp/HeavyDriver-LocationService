@@ -1,5 +1,7 @@
 package org.mrstm.uberlocationservice.controllers;
 
+import org.mrstm.uberentityservice.dto.location.DriverLocation;
+import org.mrstm.uberentityservice.models.ExactLocation;
 import org.mrstm.uberlocationservice.adaptors.StringToDouble;
 import org.mrstm.uberlocationservice.dto.CheckIfWithinDestDto;
 import org.mrstm.uberlocationservice.dto.DriverLocationDto;
@@ -40,10 +42,10 @@ public class LocationController {
     }
 
     @PostMapping("/nearby/drivers")
-    public ResponseEntity<List<DriverLocationDto>> getNearbyDrivers(@RequestBody NearbyDriversRequestDto nearbyDriversRequestDto) {
+    public ResponseEntity<List<DriverLocation>> getNearbyDrivers(@RequestBody NearbyDriversRequestDto nearbyDriversRequestDto) {
         try{
             Location location = adaptor.convertToDouble(nearbyDriversRequestDto);
-            List<DriverLocationDto> nearbyDrivers = locationService.getNearbyDrivers(location.getLatitude() , location.getLongitude());
+            List<DriverLocation> nearbyDrivers = locationService.getNearbyDrivers(ExactLocation.builder().latitude(location.getLatitude()).longitude(location.getLongitude()).build());
             return new ResponseEntity<>(nearbyDrivers, HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e);
