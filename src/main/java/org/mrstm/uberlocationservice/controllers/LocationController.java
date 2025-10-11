@@ -31,12 +31,13 @@ public class LocationController {
         this.adaptor = adaptor;
     }
 
-    @PostMapping("/drivers/location")
-    public ResponseEntity<?> saveDriverLocation(@Valid @RequestBody SaveDriverLocationRequestDto dto) {
+    @PostMapping("/drivers/{driverId}/location")
+    public ResponseEntity<?> saveDriverLocation(@PathVariable String driverId , @RequestBody Location location) {
         try {
-            boolean saved = locationService.saveDriverLocation(dto.getDriverId(), dto.getLatitude(), dto.getLongitude());
+
+            boolean saved = locationService.saveDriverLocation(driverId, location);
             if (saved) {
-                return ResponseEntity.status(HttpStatus.CREATED)
+                return ResponseEntity.status(HttpStatus.OK)
                         .body(Map.of("success", true, "message", "Location saved successfully"));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)

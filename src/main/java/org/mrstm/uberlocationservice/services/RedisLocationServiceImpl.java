@@ -33,18 +33,18 @@ public class RedisLocationServiceImpl implements LocationService {
 
 
     @Override
-    public Boolean saveDriverLocation(String driverId, Double latitude, Double longitude) {
+    public Boolean saveDriverLocation(String driverId, Location location) {
        try{
            GeoOperations<String, String> geoOps = stringRedisTemplate.opsForGeo(); //geooperations is primarily used for storing geo coordinates
            geoOps.add(DRIVER_LOCATION_KEY,
                    new RedisGeoCommands.GeoLocation<>(driverId,
-                           new Point(latitude, longitude)));
-           DriverLocation location = DriverLocation.builder()
+                           new Point(location.getLatitude(), location.getLongitude())));
+           DriverLocation driverLocation = DriverLocation.builder()
                    .driverId(driverId)
-                   .latitude(latitude)
-                   .longitude(longitude)
+                   .latitude(location.getLatitude())
+                   .longitude(location.getLongitude())
                    .build();
-           driverLocationPublisher.publish(location);
+           driverLocationPublisher.publish(driverLocation);
            return true;
        } catch (RuntimeException e) {
            return false;
