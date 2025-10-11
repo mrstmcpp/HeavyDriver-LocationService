@@ -5,6 +5,7 @@ import org.mrstm.uberentityservice.models.ExactLocation;
 import org.mrstm.uberlocationservice.Maths.GetDistanceBetweenTwoPoints;
 import org.mrstm.uberlocationservice.dto.CheckIfWithinDestDto;
 import org.mrstm.uberlocationservice.models.Location;
+import org.mrstm.uberlocationservice.producers.DriverLocationPublisher;
 import org.springframework.data.geo.*;
 import org.springframework.data.redis.connection.RedisGeoCommands;
 import org.springframework.data.redis.core.GeoOperations;
@@ -22,9 +23,11 @@ public class RedisLocationServiceImpl implements LocationService {
     private static final Double NEAR_LOCATION_KEY = 0.5;
     private final GetDistanceBetweenTwoPoints getDistanceBetweenTwoPoints;
     private final StringRedisTemplate stringRedisTemplate;
+    private final DriverLocationPublisher driverLocationPublisher;
 
-    public RedisLocationServiceImpl(StringRedisTemplate stringRedisTemplate) {
+    public RedisLocationServiceImpl(StringRedisTemplate stringRedisTemplate, DriverLocationPublisher driverLocationPublisher) {
         this.stringRedisTemplate = stringRedisTemplate;
+        this.driverLocationPublisher = driverLocationPublisher;
         this.getDistanceBetweenTwoPoints = new GetDistanceBetweenTwoPoints();
     }
 
@@ -36,7 +39,12 @@ public class RedisLocationServiceImpl implements LocationService {
            geoOps.add(DRIVER_LOCATION_KEY,
                    new RedisGeoCommands.GeoLocation<>(driverId,
                            new Point(latitude, longitude)));
-
+           DriverLocation location = DriverLocation.builder()
+                   .driverId(driverId)
+                   .latitude(latitude)
+                   .longitude(longitude)
+                   .build();
+           driverLocationPublisher.publish(location);
            return true;
        } catch (RuntimeException e) {
            return false;

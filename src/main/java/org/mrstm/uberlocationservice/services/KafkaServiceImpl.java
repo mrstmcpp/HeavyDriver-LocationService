@@ -1,6 +1,7 @@
 package org.mrstm.uberlocationservice.services;
 
 import org.mrstm.uberentityservice.dto.booking.NearbyDriverEvent;
+import org.mrstm.uberentityservice.dto.location.DriverLocation;
 import org.mrstm.uberentityservice.kafkaTopics.KafkaTopics;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -15,11 +16,13 @@ public class KafkaServiceImpl implements KafkaService{
     }
 
     @Override
-    public void publishDriverLocations(NearbyDriverEvent nearbyDriverEvent) {
+    public void publishNearbyDriverLocations(NearbyDriverEvent nearbyDriverEvent) {
         try {
             kafkaTemplate.send(KafkaTopics.NEARBY_DRIVERS , nearbyDriverEvent);
         } catch (RuntimeException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+
 }

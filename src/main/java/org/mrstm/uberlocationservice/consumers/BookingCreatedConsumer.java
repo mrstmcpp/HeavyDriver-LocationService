@@ -4,7 +4,7 @@ package org.mrstm.uberlocationservice.consumers;
 import org.mrstm.uberentityservice.dto.booking.BookingCreatedEvent;
 import org.mrstm.uberentityservice.dto.booking.NearbyDriverEvent;
 import org.mrstm.uberentityservice.dto.location.DriverLocation;
-import org.mrstm.uberlocationservice.kafka.KafkaTopics;
+import org.mrstm.uberentityservice.kafkaTopics.KafkaTopics;
 import org.mrstm.uberlocationservice.services.KafkaService;
 import org.mrstm.uberlocationservice.services.LocationService;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -35,7 +35,7 @@ public class BookingCreatedConsumer {
                 .pickupLocation(payload.getPickupLocation())
                 .dropLocation(payload.getDropLocation())
                 .driverLocationList(nearbyDrivers).build();
-        kafkaService.publishDriverLocations(nearbyDriverEvent); //send it for producing nearby driver list
+        kafkaService.publishNearbyDriverLocations(nearbyDriverEvent); //send it for producing nearby driver list
     }
 
 

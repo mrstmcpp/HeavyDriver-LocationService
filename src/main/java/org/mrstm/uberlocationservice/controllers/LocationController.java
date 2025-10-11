@@ -1,5 +1,6 @@
 package org.mrstm.uberlocationservice.controllers;
 
+import jakarta.validation.Valid;
 import org.mrstm.uberentityservice.dto.location.DriverLocation;
 import org.mrstm.uberentityservice.models.ExactLocation;
 import org.mrstm.uberlocationservice.adaptors.StringToDouble;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/location")
@@ -29,16 +31,24 @@ public class LocationController {
         this.adaptor = adaptor;
     }
 
-    @PostMapping("/drivers")
-    public ResponseEntity<Boolean> saveDriverLocation(@RequestBody SaveDriverLocationRequestDto driverLocation) {
-        try{
-            Boolean response = locationService.saveDriverLocation(driverLocation.getDriverId() , driverLocation.getLatitude(), driverLocation.getLongitude());
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+    @PostMapping("/drivers/location")
+    public ResponseEntity<?> saveDriverLocation(@Valid @RequestBody SaveDriverLocationRequestDto dto) {
+        try {
+            boolean saved = locationService.saveDriverLocation(dto.getDriverId(), dto.getLatitude(), dto.getLongitude());
+            if (saved) {
+                return ResponseEntity.status(HttpStatus.CREATED)
+                        .body(Map.of("success", true, "message", "Location saved successfully"));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(Map.of("success", false, "message", "Failed to save location"));
+            }
         } catch (Exception e) {
-            System.out.println(e);
-            return new ResponseEntity<>(false , HttpStatus.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "error", e.getMessage()));
         }
     }
+
 
     @PostMapping("/nearby/drivers")
     public ResponseEntity<List<DriverLocation>> getNearbyDrivers(@RequestBody NearbyDriversRequestDto nearbyDriversRequestDto) {
