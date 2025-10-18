@@ -29,6 +29,9 @@ public class BookingCreatedConsumer {
     public void consumeBookingCreated(BookingCreatedEvent payload) { // this function send driver list to socket for producing notifications
         System.out.println(payload.getBookingId());
         List<DriverLocation> nearbyDrivers = locationService.getNearbyDrivers(payload.getPickupLocation());
+        for(DriverLocation it : nearbyDrivers){
+            System.out.println("Driver: " + it.getDriverId() + " " + it.getLongitude() + " " + it.getLatitude());
+        }
         NearbyDriverEvent nearbyDriverEvent = NearbyDriverEvent.builder()
                 .bookingId(payload.getBookingId())
                 .passengerId(payload.getPassengerId())

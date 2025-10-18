@@ -15,4 +15,7 @@ public interface LocationService {
     Location getCurrentLocationOfDriver(String driverId);
 
     Boolean checkAtDestination(CheckIfWithinDestDto checkIfWithinDestDto);
+
+    void setDriverActive(String driverId);
+    void setDriverInactive(String driverId);
 }

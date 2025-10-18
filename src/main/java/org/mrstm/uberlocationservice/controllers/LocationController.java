@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/location")
+@RequestMapping("/")
 public class LocationController {
 
     private final LocationService locationService;
@@ -31,7 +31,7 @@ public class LocationController {
         this.adaptor = adaptor;
     }
 
-    @PostMapping("/drivers/{driverId}/location")
+    @PostMapping("/driver/{driverId}/location")
     public ResponseEntity<?> saveDriverLocation(@PathVariable String driverId , @RequestBody Location location) {
         try {
 
@@ -50,6 +50,30 @@ public class LocationController {
         }
     }
 
+    @PutMapping("/drivers/{driverId}/active")
+    public ResponseEntity<String> markDriverActive(@PathVariable String driverId){
+        try{
+            locationService.setDriverActive(driverId);
+            return new ResponseEntity<>("Driver active state changed successfully." , HttpStatus.OK);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>("failed to change active state of driver", HttpStatus.NOT_MODIFIED);
+        }
+
+    }
+
+    @PutMapping("/drivers/{driverId}/inactive")
+    public ResponseEntity<String> markDriverInactive(@PathVariable String driverId){
+        try{
+            locationService.setDriverInactive(driverId);
+            return new ResponseEntity<>("Driver active state changed successfully." , HttpStatus.OK);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            return new ResponseEntity<>("failed to change inactive state of driver", HttpStatus.NOT_MODIFIED);
+        }
+
+    }
+
 
     @PostMapping("/nearby/drivers")
     public ResponseEntity<List<DriverLocation>> getNearbyDrivers(@RequestBody NearbyDriversRequestDto nearbyDriversRequestDto) {
@@ -65,7 +89,7 @@ public class LocationController {
     }
 
 
-    @GetMapping("/driver/{driverId}")
+    @GetMapping("/drivers/{driverId}")
     public ResponseEntity<Location> getDriverLocation(@PathVariable long driverId) {
 
         Location location = locationService.getCurrentLocationOfDriver(String.valueOf(driverId));
@@ -77,7 +101,7 @@ public class LocationController {
     }
 
 
-    @PostMapping("/driver/verifyLocation/{driverId}")
+    @PostMapping("/drivers/verifyLocation/{driverId}")
     public ResponseEntity<Boolean> verifyDriverLocation(@PathVariable long driverId , @RequestBody Location location){
         CheckIfWithinDestDto checkIfWithinDestDto = CheckIfWithinDestDto.builder()
                 .driverId(String.valueOf(driverId))
