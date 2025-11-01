@@ -15,7 +15,7 @@ public class DriverLocationPublisher {
 
     public void publish(DriverLocation location){
         try {
-            System.out.println("Publishing driver location for passenger: " + location.getDriverId());
+//            System.out.println("Publishing driver location for passenger: " + location.getDriverId());
             kafkaTemplate.send(KafkaTopics.DRIVER_LOCATION, location);
         } catch (Exception e) {
             System.err.println("Failed to publish driver location: " + e.getMessage());
