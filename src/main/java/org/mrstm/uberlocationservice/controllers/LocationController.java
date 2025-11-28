@@ -31,11 +31,13 @@ public class LocationController {
         this.adaptor = adaptor;
     }
 
-    @PostMapping("/driver/{driverId}/location")
-    public ResponseEntity<?> saveDriverLocation(@PathVariable String driverId , @RequestBody Location location) {
+    @PostMapping("/drivers/location")
+    public ResponseEntity<?> saveDriverLocation( @RequestBody Location location , @RequestHeader("X-User-Id") Long userId,
+                                                @RequestHeader("X-User-Role") String role) {
+
         try {
 
-            boolean saved = locationService.saveDriverLocation(driverId, location);
+            boolean saved = locationService.saveDriverLocation(userId.toString(), location);
             if (saved) {
                 return ResponseEntity.status(HttpStatus.OK)
                         .body(Map.of("success", true, "message", "Location saved successfully"));
@@ -50,10 +52,11 @@ public class LocationController {
         }
     }
 
-    @PutMapping("/drivers/{driverId}/active")
-    public ResponseEntity<String> markDriverActive(@PathVariable String driverId){
+    @PutMapping("/drivers/active")
+    public ResponseEntity<String> markDriverActive( @RequestHeader("X-User-Id") Long userId,
+                                                   @RequestHeader("X-User-Role") String role){
         try{
-            locationService.setDriverActive(driverId);
+            locationService.setDriverActive(userId.toString());
             return new ResponseEntity<>("Driver active state changed successfully." , HttpStatus.OK);
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -62,10 +65,11 @@ public class LocationController {
 
     }
 
-    @PutMapping("/drivers/{driverId}/inactive")
-    public ResponseEntity<String> markDriverInactive(@PathVariable String driverId){
+    @PutMapping("/drivers/inactive")
+    public ResponseEntity<String> markDriverInactive(@RequestHeader("X-User-Id") Long userId,
+                                                     @RequestHeader("X-User-Role") String role){
         try{
-            locationService.setDriverInactive(driverId);
+            locationService.setDriverInactive(userId.toString());
             return new ResponseEntity<>("Driver active state changed successfully." , HttpStatus.OK);
         } catch (Exception e) {
             System.err.println(e.getMessage());
@@ -101,10 +105,11 @@ public class LocationController {
     }
 
 
-    @PostMapping("/drivers/verifyLocation/{driverId}")
-    public ResponseEntity<Boolean> verifyDriverLocation(@PathVariable long driverId , @RequestBody Location location){
+    @PostMapping("/drivers/verifyLocation")
+    public ResponseEntity<Boolean> verifyDriverLocation(@RequestHeader("X-User-Id") Long userId,
+                                                        @RequestHeader("X-User-Role") String role, @RequestBody Location location){
         CheckIfWithinDestDto checkIfWithinDestDto = CheckIfWithinDestDto.builder()
-                .driverId(String.valueOf(driverId))
+                .driverId(userId.toString())
                 .endLocation(location)
                 .build();
         Boolean response = locationService.checkAtDestination(checkIfWithinDestDto);
